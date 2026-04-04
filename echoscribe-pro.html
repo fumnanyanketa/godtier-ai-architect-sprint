@@ -4,19 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EchoScribe Pro by Fumnanya</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
     --obsidian: #0a0a0f;
-    --obsidian-mid: #111118;
     --obsidian-light: #1a1a26;
     --glass: rgba(255,255,255,0.04);
     --glass-border: rgba(255,255,255,0.08);
     --electric-blue: #4f8ef7;
     --soft-violet: #a78bfa;
-    --accent-glow: rgba(79,142,247,0.15);
     --text-primary: #f0f0f8;
     --text-secondary: rgba(240,240,248,0.5);
     --text-muted: rgba(240,240,248,0.25);
@@ -25,71 +23,59 @@
   }
 
   html, body {
-    height: 100%;
+    min-height: 100%;
     background: var(--obsidian);
     color: var(--text-primary);
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
-  /* Atmospheric background */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background:
       radial-gradient(ellipse 80% 50% at 20% 10%, rgba(79,142,247,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(167,139,250,0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 60% at 50% 50%, rgba(79,142,247,0.03) 0%, transparent 70%);
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(167,139,250,0.05) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
-  }
-
-  /* Subtle grain */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
   }
 
   .app {
     position: relative;
     z-index: 1;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 28px 36px 28px;
+    align-items: center;
+    padding: 28px 20px 40px;
     gap: 20px;
   }
 
-  /* Header */
+  .inner {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-shrink: 0;
-  }
-
-  .brand {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .brand-name {
-    font-family: 'DM Sans', sans-serif;
     font-size: 22px;
     font-weight: 500;
     background: linear-gradient(135deg, var(--electric-blue) 0%, var(--soft-violet) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -0.3px;
     line-height: 1;
   }
 
@@ -98,13 +84,14 @@
     color: var(--text-muted);
     letter-spacing: 2px;
     text-transform: uppercase;
-    font-weight: 400;
+    margin-top: 3px;
   }
 
-  .header-status {
+  .header-right {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
   }
 
   .status-badge {
@@ -133,6 +120,7 @@
     border-radius: 50%;
     background: var(--text-muted);
     transition: all 0.3s ease;
+    flex-shrink: 0;
   }
 
   .status-badge.recording .status-dot {
@@ -146,248 +134,11 @@
     50% { opacity: 0.5; transform: scale(0.7); }
   }
 
-  /* Word count */
   .word-count {
     font-size: 11px;
     color: var(--text-muted);
-    letter-spacing: 0.5px;
   }
 
-  /* Main transcription area */
-  .transcription-wrapper {
-    flex: 1;
-    min-height: 0;
-    position: relative;
-    border-radius: 16px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(167,139,250,0.08), transparent 60%);
-  }
-
-  .transcription-inner {
-    position: relative;
-    height: 100%;
-    border-radius: 15px;
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Subtle inner glow when recording */
-  .transcription-inner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 15px;
-    background: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(79,142,247,0.08) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .transcription-inner.recording::before {
-    opacity: 1;
-  }
-
-  .transcription-content {
-    flex: 1;
-    min-height: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  #transcription-area {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    resize: none;
-    color: var(--text-primary);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 17px;
-    font-weight: 300;
-    line-height: 1.75;
-    padding: 28px 32px 20px;
-    letter-spacing: 0.1px;
-  }
-
-  #transcription-area::placeholder {
-    color: var(--text-muted);
-    font-style: italic;
-    font-size: 16px;
-  }
-
-  /* Interim text overlay */
-  .interim-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 0 32px 12px;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .interim-text {
-    color: rgba(79,142,247,0.6);
-    font-size: 17px;
-    font-weight: 300;
-    line-height: 1.75;
-    font-style: italic;
-    min-height: 24px;
-    transition: opacity 0.2s ease;
-  }
-
-  /* Controls bar */
-  .controls-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 24px 16px;
-    border-top: 1px solid var(--glass-border);
-    position: relative;
-    z-index: 2;
-    flex-shrink: 0;
-  }
-
-  .controls-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .controls-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Icon buttons */
-  .icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-    background: var(--glass);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-
-  .icon-btn:hover {
-    border-color: rgba(79,142,247,0.3);
-    color: var(--text-primary);
-    background: rgba(79,142,247,0.08);
-  }
-
-  .icon-btn.active {
-    border-color: rgba(79,142,247,0.4);
-    background: rgba(79,142,247,0.12);
-    color: var(--electric-blue);
-  }
-
-  .icon-btn svg {
-    width: 15px;
-    height: 15px;
-  }
-
-  /* Tooltip */
-  .icon-btn::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--obsidian-light);
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
-    font-size: 10px;
-    letter-spacing: 0.5px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-  }
-
-  .icon-btn:hover::after {
-    opacity: 1;
-  }
-
-  /* Record button */
-  .record-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 20px;
-    height: 40px;
-    border-radius: 12px;
-    border: 1px solid rgba(79,142,247,0.3);
-    background: rgba(79,142,247,0.08);
-    color: var(--electric-blue);
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .record-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--electric-blue), var(--soft-violet));
-    opacity: 0;
-    transition: opacity 0.25s ease;
-  }
-
-  .record-btn:hover::before {
-    opacity: 0.1;
-  }
-
-  .record-btn:hover {
-    border-color: rgba(79,142,247,0.6);
-    box-shadow: 0 0 20px rgba(79,142,247,0.15);
-  }
-
-  .record-btn.recording {
-    border-color: rgba(255,71,87,0.4);
-    background: rgba(255,71,87,0.08);
-    color: var(--recording-red);
-  }
-
-  .record-btn.recording:hover {
-    border-color: rgba(255,71,87,0.7);
-    box-shadow: 0 0 20px rgba(255,71,87,0.15);
-  }
-
-  .record-btn span {
-    position: relative;
-    z-index: 1;
-  }
-
-  .record-btn svg {
-    width: 14px;
-    height: 14px;
-    position: relative;
-    z-index: 1;
-    transition: all 0.25s ease;
-  }
-
-  /* Waveform visualizer */
   .waveform {
     display: flex;
     align-items: center;
@@ -397,9 +148,7 @@
     transition: opacity 0.3s ease;
   }
 
-  .waveform.active {
-    opacity: 1;
-  }
+  .waveform.active { opacity: 1; }
 
   .wave-bar {
     width: 3px;
@@ -420,7 +169,185 @@
     50% { transform: scaleY(1); opacity: 1; }
   }
 
-  /* Toast notification */
+  .transcription-wrapper {
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(167,139,250,0.08), transparent 60%);
+  }
+
+  .transcription-inner {
+    border-radius: 15px;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .transcription-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    background: radial-gradient(ellipse 60% 30% at 50% 0%, rgba(79,142,247,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .transcription-inner.recording::before { opacity: 1; }
+
+  .not-supported {
+    display: none;
+    padding: 40px 24px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .not-supported.show { display: flex; }
+  .not-supported p { color: var(--text-secondary); font-size: 14px; max-width: 300px; line-height: 1.6; }
+  .not-supported strong { color: var(--recording-red); font-size: 16px; display: block; margin-bottom: 4px; }
+
+  #transcription-area {
+    width: 100%;
+    min-height: 280px;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.75;
+    padding: 24px 24px 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  #transcription-area::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  .interim-overlay {
+    padding: 0 24px 8px;
+    pointer-events: none;
+    z-index: 1;
+    position: relative;
+  }
+
+  .interim-text {
+    color: rgba(79,142,247,0.6);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.75;
+    font-style: italic;
+    min-height: 20px;
+  }
+
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 14px;
+    border-top: 1px solid var(--glass-border);
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .icon-btn:hover {
+    border-color: rgba(79,142,247,0.3);
+    color: var(--text-primary);
+    background: rgba(79,142,247,0.08);
+  }
+
+  .icon-btn svg { width: 15px; height: 15px; }
+
+  .lang-select {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+    max-width: 150px;
+  }
+
+  .lang-select option { background: #1a1a26; color: #f0f0f8; }
+
+  .record-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid rgba(79,142,247,0.3);
+    background: rgba(79,142,247,0.08);
+    color: var(--electric-blue);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .record-btn:hover {
+    border-color: rgba(79,142,247,0.6);
+    box-shadow: 0 0 20px rgba(79,142,247,0.15);
+  }
+
+  .record-btn.recording {
+    border-color: rgba(255,71,87,0.4);
+    background: rgba(255,71,87,0.08);
+    color: var(--recording-red);
+  }
+
+  .record-btn svg { width: 14px; height: 14px; }
+
+  .hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+
   .toast {
     position: fixed;
     bottom: 24px;
@@ -436,196 +363,123 @@
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
     opacity: 0;
     z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 8px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     white-space: nowrap;
   }
 
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast.success { border-color: rgba(46,213,115,0.3); color: var(--success); }
   .toast.error { border-color: rgba(255,71,87,0.3); color: var(--recording-red); }
 
-  /* Language selector */
-  .lang-select {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    outline: none;
-    letter-spacing: 0.3px;
-  }
-
-  .lang-select option {
-    background: #1a1a26;
-    color: #f0f0f8;
-  }
-
-  /* Scrollbar */
   #transcription-area::-webkit-scrollbar { width: 4px; }
   #transcription-area::-webkit-scrollbar-track { background: transparent; }
   #transcription-area::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
 
-  /* Mic not supported */
-  .not-supported {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: var(--obsidian);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
-    z-index: 10;
-    border-radius: 15px;
-  }
-
-  .not-supported.show { display: flex; }
-  .not-supported p { color: var(--text-secondary); font-size: 14px; max-width: 300px; line-height: 1.6; }
-  .not-supported strong { color: var(--recording-red); font-size: 16px; display: block; margin-bottom: 4px; }
-
-  /* Character limit hint */
-  .char-hint {
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 0.3px;
+  @media (max-width: 600px) {
+    .app { padding: 18px 14px 32px; gap: 14px; }
+    .brand-name { font-size: 18px; }
+    #transcription-area { font-size: 15px; padding: 18px 16px 10px; min-height: 200px; }
+    .interim-text { font-size: 15px; }
+    .interim-overlay { padding: 0 16px 8px; }
+    .controls-bar { padding: 10px 12px 12px; }
+    .record-btn { padding: 0 14px; font-size: 11px; }
+    .lang-select { max-width: 120px; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
+  <div class="inner">
 
-  <!-- Header -->
-  <header>
-    <div class="brand">
-      <div class="brand-name">EchoScribe Pro</div>
-      <div class="brand-sub">by Fumnanya</div>
-    </div>
-    <div class="header-status">
-      <div class="waveform" id="waveform">
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
+    <header>
+      <div class="brand">
+        <div class="brand-name">EchoScribe Pro</div>
+        <div class="brand-sub">by Fumnanya</div>
       </div>
-      <div class="status-badge" id="status-badge">
-        <div class="status-dot"></div>
-        <span id="status-text">Ready</span>
+      <div class="header-right">
+        <div class="waveform" id="waveform">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="status-badge" id="status-badge">
+          <div class="status-dot"></div>
+          <span id="status-text">Ready</span>
+        </div>
+        <span class="word-count" id="word-count">0 words</span>
       </div>
-      <span class="word-count" id="word-count">0 words</span>
-    </div>
-  </header>
+    </header>
 
-  <!-- Transcription Box -->
-  <div class="transcription-wrapper">
-    <div class="transcription-inner" id="transcription-inner">
+    <div class="transcription-wrapper">
+      <div class="transcription-inner" id="transcription-inner">
 
-      <div class="not-supported" id="not-supported">
-        <p><strong>Microphone not available</strong>Please use Chrome or Edge and allow microphone access to use EchoScribe Pro.</p>
-      </div>
+        <div class="not-supported" id="not-supported">
+          <p><strong>Microphone not available</strong>Please use Chrome or Edge and allow microphone access.</p>
+        </div>
 
-      <div class="transcription-content">
         <textarea
           id="transcription-area"
           placeholder="Start speaking or type here... Your words will appear as you speak."
           spellcheck="true"
         ></textarea>
-      </div>
 
-      <div class="interim-overlay">
-        <div class="interim-text" id="interim-text"></div>
-      </div>
-
-      <!-- Controls bar inside the box -->
-      <div class="controls-bar">
-        <div class="controls-left">
-          <select class="lang-select" id="lang-select" title="Recognition language">
-            <option value="en-US">English (US)</option>
-            <option value="en-GB">English (UK)</option>
-            <option value="fi-FI">Finnish</option>
-            <option value="fr-FR">French</option>
-            <option value="de-DE">German</option>
-            <option value="es-ES">Spanish</option>
-            <option value="pt-BR">Portuguese (BR)</option>
-            <option value="yo-NG">Yoruba</option>
-            <option value="ig-NG">Igbo</option>
-          </select>
-          <span class="char-hint" id="char-hint"></span>
+        <div class="interim-overlay">
+          <div class="interim-text" id="interim-text"></div>
         </div>
 
-        <div class="controls-right">
-          <!-- Clear button -->
-          <button class="icon-btn" id="clear-btn" data-tip="Clear all" onclick="clearAll()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6l-1 14H6L5 6"></path>
-              <path d="M10 11v6M14 11v6"></path>
-            </svg>
-          </button>
-
-          <!-- Copy button -->
-          <button class="icon-btn" id="copy-btn" data-tip="Copy text" onclick="copyText()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
-            </svg>
-          </button>
-
-          <!-- Download button -->
-          <button class="icon-btn" id="download-btn" data-tip="Download as .txt" onclick="downloadText()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-          </button>
-
-          <!-- Record button -->
-          <button class="record-btn" id="record-btn" onclick="toggleRecording()">
-            <svg id="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path>
-              <path d="M19 10v2a7 7 0 01-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="23"></line>
-              <line x1="8" y1="23" x2="16" y2="23"></line>
-            </svg>
-            <span id="record-label">Record</span>
-          </button>
+        <div class="controls-bar">
+          <div class="controls-left">
+            <select class="lang-select" id="lang-select">
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="fi-FI">Finnish</option>
+              <option value="fr-FR">French</option>
+              <option value="de-DE">German</option>
+              <option value="es-ES">Spanish</option>
+              <option value="pt-BR">Portuguese (BR)</option>
+              <option value="yo-NG">Yoruba</option>
+              <option value="ig-NG">Igbo</option>
+            </select>
+          </div>
+          <div class="controls-right">
+            <button class="icon-btn" title="Clear all" onclick="clearAll()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>
+            </button>
+            <button class="icon-btn" title="Copy text" onclick="copyText()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path></svg>
+            </button>
+            <button class="icon-btn" title="Download .txt" onclick="downloadText()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button class="record-btn" id="record-btn" onclick="toggleRecording()">
+              <svg id="mic-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path><path d="M19 10v2a7 7 0 01-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              <span id="record-label">Record</span>
+            </button>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
-  </div>
 
+    <p class="hint">Chrome and Edge only &nbsp;·&nbsp; Spacebar toggles recording &nbsp;·&nbsp; Allow microphone when prompted</p>
+
+  </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-  // Elements
   const textarea = document.getElementById('transcription-area');
   const interimEl = document.getElementById('interim-text');
   const statusBadge = document.getElementById('status-badge');
   const statusText = document.getElementById('status-text');
-  const statusDot = statusBadge.querySelector('.status-dot');
   const recordBtn = document.getElementById('record-btn');
   const recordLabel = document.getElementById('record-label');
-  const micIcon = document.getElementById('mic-icon');
   const waveform = document.getElementById('waveform');
   const wordCountEl = document.getElementById('word-count');
-  const charHint = document.getElementById('char-hint');
   const transcriptionInner = document.getElementById('transcription-inner');
   const notSupported = document.getElementById('not-supported');
   const langSelect = document.getElementById('lang-select');
@@ -635,56 +489,30 @@
   let isRecording = false;
   let toastTimer = null;
 
-  // Check browser support
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    notSupported.classList.add('show');
-  }
+  if (!SpeechRecognition) notSupported.classList.add('show');
 
-  // Update word count
   function updateWordCount() {
     const text = textarea.value.trim();
     const words = text ? text.split(/\s+/).length : 0;
-    const chars = text.length;
     wordCountEl.textContent = `${words} word${words !== 1 ? 's' : ''}`;
-    charHint.textContent = chars > 0 ? `${chars} chars` : '';
   }
 
   textarea.addEventListener('input', updateWordCount);
 
-  // Toast notification
   function showToast(message, type = '') {
     if (toastTimer) clearTimeout(toastTimer);
     toast.textContent = message;
     toast.className = `toast ${type} show`;
-    toastTimer = setTimeout(() => {
-      toast.className = `toast ${type}`;
-    }, 3000);
+    toastTimer = setTimeout(() => { toast.className = `toast ${type}`; }, 3000);
   }
 
-  // Stop icon SVG
-  const stopIconSVG = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="14" height="14">
-    <rect x="4" y="4" width="16" height="16" rx="2"/>
-  </svg>`;
+  const stopSVG = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" width="14" height="14"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>`;
+  const micSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path><path d="M19 10v2a7 7 0 01-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>`;
 
-  const micIconSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path>
-    <path d="M19 10v2a7 7 0 01-14 0v-2"></path>
-    <line x1="12" y1="19" x2="12" y2="23"></line>
-    <line x1="8" y1="23" x2="16" y2="23"></line>
-  </svg>`;
-
-  // Toggle recording
   function toggleRecording() {
-    if (!SpeechRecognition) {
-      showToast('Speech recognition not supported in this browser. Use Chrome or Edge.', 'error');
-      return;
-    }
-    if (isRecording) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
+    if (!SpeechRecognition) { showToast('Use Chrome or Edge for speech recognition.', 'error'); return; }
+    isRecording ? stopRecording() : startRecording();
   }
 
   function startRecording() {
@@ -693,14 +521,13 @@
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = langSelect.value;
-      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         isRecording = true;
         recordBtn.classList.add('recording');
         recordLabel.textContent = 'Stop';
         recordBtn.querySelector('svg')?.remove();
-        recordBtn.insertAdjacentHTML('afterbegin', stopIconSVG);
+        recordBtn.insertAdjacentHTML('afterbegin', stopSVG);
         statusBadge.classList.add('recording');
         statusText.textContent = 'Listening';
         transcriptionInner.classList.add('recording');
@@ -708,95 +535,61 @@
       };
 
       recognition.onresult = (event) => {
-        let interim = '';
-        let finalText = '';
-
+        let interim = '', finalText = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalText += transcript + ' ';
-          } else {
-            interim += transcript;
-          }
+          const t = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalText += t + ' ';
+          else interim += t;
         }
-
         if (finalText) {
-          const currentVal = textarea.value;
-          const needsSpace = currentVal.length > 0 && !currentVal.endsWith(' ') && !currentVal.endsWith('\n');
-          textarea.value += (needsSpace ? ' ' : '') + finalText;
+          const v = textarea.value;
+          const space = v.length > 0 && !v.endsWith(' ') && !v.endsWith('\n') ? ' ' : '';
+          textarea.value += space + finalText;
           textarea.scrollTop = textarea.scrollHeight;
           updateWordCount();
         }
-
         interimEl.textContent = interim;
       };
 
       recognition.onerror = (event) => {
-        if (event.error === 'not-allowed') {
-          showToast('Microphone access denied. Please allow microphone access.', 'error');
-          stopRecording();
-        } else if (event.error === 'network') {
-          showToast('Network error. Check your connection.', 'error');
-        } else if (event.error !== 'aborted') {
-          showToast(`Recognition error: ${event.error}`, 'error');
-        }
+        if (event.error === 'not-allowed') { showToast('Microphone access denied. Allow it in browser settings.', 'error'); stopRecording(); }
+        else if (event.error !== 'aborted') showToast(`Error: ${event.error}`, 'error');
       };
 
       recognition.onend = () => {
         interimEl.textContent = '';
-        if (isRecording) {
-          // Auto-restart for continuous recording
-          try { recognition.start(); } catch(e) { stopRecording(); }
-        }
+        if (isRecording) { try { recognition.start(); } catch(e) { stopRecording(); } }
       };
 
       recognition.start();
-
-    } catch(e) {
-      showToast('Could not start microphone. Please check permissions.', 'error');
-    }
+    } catch(e) { showToast('Could not start microphone. Check permissions.', 'error'); }
   }
 
   function stopRecording() {
     isRecording = false;
-    if (recognition) {
-      recognition.stop();
-      recognition = null;
-    }
+    if (recognition) { recognition.stop(); recognition = null; }
     interimEl.textContent = '';
     recordBtn.classList.remove('recording');
     recordLabel.textContent = 'Record';
     recordBtn.querySelector('svg')?.remove();
-    recordBtn.insertAdjacentHTML('afterbegin', micIconSVG);
+    recordBtn.insertAdjacentHTML('afterbegin', micSVG);
     statusBadge.classList.remove('recording');
     statusText.textContent = 'Ready';
     transcriptionInner.classList.remove('recording');
     waveform.classList.remove('active');
   }
 
-  // Copy text
   function copyText() {
     const text = textarea.value.trim();
     if (!text) { showToast('Nothing to copy yet.'); return; }
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('Copied to clipboard.', 'success');
-    }).catch(() => {
-      showToast('Could not copy. Try selecting and copying manually.', 'error');
-    });
+    navigator.clipboard.writeText(text).then(() => showToast('Copied.', 'success')).catch(() => showToast('Could not copy.', 'error'));
   }
 
-  // Clear all
   function clearAll() {
     if (!textarea.value.trim()) return;
-    if (confirm('Clear all transcribed text?')) {
-      textarea.value = '';
-      interimEl.textContent = '';
-      updateWordCount();
-      showToast('Cleared.');
-    }
+    if (confirm('Clear all transcribed text?')) { textarea.value = ''; interimEl.textContent = ''; updateWordCount(); showToast('Cleared.'); }
   }
 
-  // Download as .txt
   function downloadText() {
     const text = textarea.value.trim();
     if (!text) { showToast('Nothing to download yet.'); return; }
@@ -810,19 +603,11 @@
     showToast('Downloaded.', 'success');
   }
 
-  // Update lang on change
-  langSelect.addEventListener('change', () => {
-    if (isRecording) {
-      stopRecording();
-      setTimeout(startRecording, 300);
-    }
-  });
+  langSelect.addEventListener('change', () => { if (isRecording) { stopRecording(); setTimeout(startRecording, 300); } });
 
-  // Keyboard shortcut: Space to toggle when textarea not focused
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && document.activeElement !== textarea && document.activeElement !== langSelect) {
-      e.preventDefault();
-      toggleRecording();
+      e.preventDefault(); toggleRecording();
     }
   });
 </script>
